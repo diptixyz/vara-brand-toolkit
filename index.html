@@ -1,0 +1,2237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vara — Partner Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #00000f;
+  --bg-raised: #0a0a14;
+  --bg-card: #10101a;
+  --bg-glass: rgba(16, 16, 26, 0.6);
+  --text: #f5f5f5;
+  --text-secondary: #ababba;
+  --text-muted: #636370;
+  --text-quaternary: #3a3a48;
+  --cyan: #7ec4e3;
+  --green: #7eea9b;
+  --purple: #635cad;
+  --rule: #1a1a24;
+  --rule-light: #24242e;
+  --radius: 10px;
+  --container: 1200px;
+  --gutter: 48px;
+}
+
+html { scroll-behavior: smooth; }
+
+::selection {
+  background: rgba(126, 196, 227, 0.2);
+  color: var(--text);
+}
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+}
+
+/* ── Grain ── */
+.grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.02;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px;
+}
+
+/* ── Reveal ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-d1 { transition-delay: 0.06s; }
+.reveal-d2 { transition-delay: 0.12s; }
+.reveal-d3 { transition-delay: 0.18s; }
+.reveal-d4 { transition-delay: 0.24s; }
+
+/* ── Containers ── */
+.container {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+/* ── Nav ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--gutter);
+  background: rgba(0, 0, 15, 0.72);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--rule);
+}
+.nav-logo {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nav-logo .sep { color: var(--text-quaternary); font-weight: 300; }
+.nav-logo .sub { color: var(--text-muted); font-weight: 400; }
+
+.nav-steps {
+  display: flex;
+  gap: 6px;
+  list-style: none;
+}
+.nav-step {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-quaternary);
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+  cursor: default;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.02em;
+}
+.nav-step.active {
+  color: var(--cyan);
+  border-color: rgba(126, 196, 227, 0.2);
+  background: rgba(126, 196, 227, 0.04);
+}
+.nav-step.completed {
+  color: var(--text-muted);
+}
+.nav-step.completed::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cyan);
+  flex-shrink: 0;
+}
+
+/* ── Hero ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  padding: 120px var(--gutter) 80px;
+}
+.hero-glow {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 800px; height: 800px;
+  transform: translate(-50%, -55%);
+  background: radial-gradient(circle, rgba(126, 196, 227, 0.04) 0%, rgba(99, 92, 173, 0.02) 40%, transparent 70%);
+  pointer-events: none;
+}
+.hero-label {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.hero-label::before,
+.hero-label::after {
+  content: '';
+  width: 20px;
+  height: 1px;
+  background: var(--rule-light);
+}
+.hero-title {
+  font-weight: 400;
+  font-size: clamp(48px, 7vw, 80px);
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+  max-width: 800px;
+  color: var(--text);
+  text-wrap: balance;
+}
+.gradient {
+  background: linear-gradient(135deg, var(--cyan) 0%, var(--purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.gradient-green {
+  background: linear-gradient(135deg, var(--cyan) 0%, var(--green) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-desc {
+  font-size: 17px;
+  font-weight: 300;
+  color: var(--text-secondary);
+  max-width: 520px;
+  line-height: 1.65;
+  margin-top: 28px;
+  text-wrap: pretty;
+}
+
+/* ── Buttons ── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--bg);
+  background: var(--text);
+  padding: 0 24px;
+  height: 40px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 1px 3px rgba(0,0,0,0.3);
+}
+.btn-primary:hover {
+  filter: brightness(1.15);
+  transform: scale(1.02);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 4px 16px rgba(0,0,0,0.4);
+}
+.btn-primary:active { transform: scale(0.97); }
+.btn-primary:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+  filter: none;
+}
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 0 24px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid var(--rule-light);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-secondary:hover {
+  border-color: var(--text-muted);
+  color: var(--text);
+  background: rgba(255,255,255,0.02);
+}
+.hero-cta-row {
+  margin-top: 40px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+/* ── Welcome card ── */
+.welcome-card {
+  margin-top: 56px;
+  max-width: 440px;
+  width: 100%;
+}
+.welcome-card .input-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.input-field {
+  flex: 1;
+  padding: 10px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.input-field:focus { border-color: var(--cyan); }
+.input-field::placeholder { color: var(--text-muted); }
+.input-label {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+/* ── Ticker ── */
+.ticker-wrap {
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  padding: 12px 0;
+  overflow: hidden;
+}
+.ticker {
+  display: flex;
+  gap: 40px;
+  animation: ticker 30s linear infinite;
+  width: max-content;
+}
+.ticker span {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-quaternary);
+  white-space: nowrap;
+}
+.ticker .dot { color: var(--cyan); font-size: 8px; }
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ── Section ── */
+.section {
+  padding: 100px 0;
+  position: relative;
+}
+.section-label {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-label::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--cyan);
+}
+.section-heading {
+  font-weight: 400;
+  font-size: clamp(32px, 4vw, 48px);
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  color: var(--text);
+  max-width: 600px;
+  text-wrap: balance;
+}
+.section-header-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: end;
+  margin-bottom: 56px;
+}
+.section-desc {
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 400px;
+}
+
+/* ── Step Sections (progressive reveal) ── */
+.step-section {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.step-section.step-active {
+  max-height: 4000px;
+  opacity: 1;
+  overflow: visible;
+}
+
+/* ── Glass Card ── */
+.glass-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 32px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.glass-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+.glass-card:hover::before { opacity: 1; }
+.glass-card:hover {
+  border-color: var(--rule-light);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+}
+
+/* ── Material Grid ── */
+.material-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.material-card {
+  cursor: pointer;
+  padding: 28px;
+  text-align: left;
+}
+.material-card .card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(126, 196, 227, 0.06);
+  border: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  transition: all 0.3s;
+  color: var(--text-muted);
+}
+.material-card:hover .card-icon {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: rgba(126, 196, 227, 0.08);
+}
+.material-card.selected {
+  border-color: var(--cyan);
+  background: rgba(126, 196, 227, 0.04);
+}
+.material-card.selected .card-icon {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: rgba(126, 196, 227, 0.1);
+}
+.material-card h4 {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.material-card p {
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+@keyframes selectPulse {
+  0% { box-shadow: 0 0 0 0 rgba(126, 196, 227, 0.3); }
+  70% { box-shadow: 0 0 0 10px rgba(126, 196, 227, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(126, 196, 227, 0); }
+}
+.material-card.pulse { animation: selectPulse 0.6s ease-out; }
+
+/* ── Config Layout ── */
+.config-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 24px;
+  align-items: start;
+}
+.config-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.config-block {
+  padding: 24px;
+}
+.config-block h4 {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  color: var(--text);
+  letter-spacing: 0.01em;
+}
+
+/* ── Pill Group ── */
+.pill-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.pill { cursor: pointer; }
+.pill input { position: absolute; opacity: 0; width: 0; height: 0; }
+.pill-label {
+  display: inline-flex;
+  padding: 8px 18px;
+  border: 1px solid var(--rule-light);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.pill-label:hover {
+  border-color: var(--text-muted);
+  color: var(--text);
+}
+.pill input:checked + .pill-label {
+  background: rgba(126, 196, 227, 0.08);
+  border-color: var(--cyan);
+  color: var(--text);
+}
+
+/* ── Claim List ── */
+.claim-list {
+  display: flex;
+  flex-direction: column;
+}
+.claim-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--rule);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.claim-item:last-child { border-bottom: none; }
+.claim-item input { position: absolute; opacity: 0; width: 0; height: 0; }
+.claim-check {
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--rule-light);
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: all 0.2s;
+  position: relative;
+}
+.claim-item:hover .claim-check { border-color: var(--text-muted); }
+.claim-item input:checked + .claim-check {
+  background: var(--cyan);
+  border-color: var(--cyan);
+}
+.claim-item input:checked + .claim-check::after {
+  content: '';
+  position: absolute;
+  top: 3px; left: 5px;
+  width: 5px; height: 9px;
+  border: solid var(--bg);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.claim-content { flex: 1; }
+.claim-text {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  display: block;
+}
+.claim-source {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 3px;
+  display: block;
+}
+
+/* ── Upload Zone ── */
+.upload-zone {
+  border: 2px dashed var(--rule-light);
+  border-radius: var(--radius);
+  padding: 28px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+}
+.upload-zone:hover,
+.upload-zone.drag-over {
+  border-color: var(--cyan);
+  background: rgba(126, 196, 227, 0.02);
+}
+.upload-zone .upload-icon {
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.upload-zone p {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 300;
+}
+.upload-zone .upload-link {
+  color: var(--cyan);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.upload-hint {
+  font-size: 11px !important;
+  color: var(--text-quaternary) !important;
+}
+.upload-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.upload-preview img {
+  max-height: 48px;
+  max-width: 180px;
+  object-fit: contain;
+}
+.upload-remove {
+  font-family: inherit;
+  font-size: 11px;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.upload-remove:hover { color: var(--text-secondary); }
+
+/* ── Summary Card ── */
+.summary-card {
+  position: sticky;
+  top: 80px;
+  padding: 28px;
+}
+.summary-card h4 {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  color: var(--text);
+  letter-spacing: 0.01em;
+}
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.summary-row:last-of-type { border-bottom: none; }
+.summary-label {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+.summary-value {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  text-align: right;
+}
+.summary-value.empty { color: var(--text-quaternary); font-style: italic; }
+.summary-logo-thumb {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  border-radius: 4px;
+  vertical-align: middle;
+}
+.summary-btn {
+  margin-top: 24px;
+  width: 100%;
+  justify-content: center;
+}
+
+/* ── Preview Section ── */
+.preview-layout {
+  display: grid;
+  grid-template-columns: 1.4fr 0.6fr;
+  gap: 24px;
+  align-items: start;
+}
+.preview-frame {
+  background: var(--bg-card);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 40px;
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.preview-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.preview-controls .config-block { padding: 20px; }
+
+/* ── Generation Animation ── */
+.generation-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  background: var(--bg-card);
+  z-index: 2;
+  border-radius: var(--radius);
+}
+.generation-overlay.hidden { display: none; }
+.generation-text {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--cyan);
+  letter-spacing: 0.01em;
+}
+.generation-bar-track {
+  width: 200px;
+  height: 2px;
+  background: var(--rule);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.generation-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--cyan), var(--green));
+  border-radius: 2px;
+  transition: width 2.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.generation-bar.filling { width: 100%; }
+.skeleton-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 280px;
+}
+.skeleton-block {
+  height: 12px;
+  background: linear-gradient(90deg, var(--bg-card) 0%, var(--rule-light) 50%, var(--bg-card) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 6px;
+}
+.skeleton-block:nth-child(1) { width: 60%; }
+.skeleton-block:nth-child(2) { width: 90%; }
+.skeleton-block:nth-child(3) { width: 75%; }
+.skeleton-block:nth-child(4) { width: 45%; }
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Preview Content ── */
+.preview-content {
+  width: 100%;
+  transition: opacity 0.3s;
+}
+.preview-content.fading { opacity: 0.4; }
+
+/* One-Pager */
+.onepager {
+  width: 100%;
+  max-width: 480px;
+  aspect-ratio: 210 / 280;
+  background: #0C0928;
+  border-radius: 8px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  color: #f5f5f5;
+  font-size: 11px;
+  overflow: hidden;
+  margin: 0 auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.onepager-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.onepager-vara {
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+.onepager-partner-logo {
+  max-height: 24px;
+  max-width: 100px;
+  object-fit: contain;
+}
+.onepager-partner-text {
+  font-size: 11px;
+  color: #AA99BF;
+  font-weight: 400;
+}
+.onepager-headline {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+.onepager-sub {
+  font-size: 12px;
+  color: #AA99BF;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  font-weight: 300;
+}
+.onepager-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.onepager-stat {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  padding: 14px 12px;
+  text-align: center;
+}
+.onepager-stat-num {
+  font-size: 22px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #83C8D6, #7F74B5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+.onepager-stat-label {
+  font-size: 9px;
+  color: #AA99BF;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+}
+.onepager-claims {
+  flex: 1;
+  margin-bottom: 20px;
+}
+.onepager-claims h5 {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #AA99BF;
+  margin-bottom: 10px;
+}
+.onepager-claims ul {
+  list-style: none;
+  padding: 0;
+}
+.onepager-claims li {
+  font-size: 10.5px;
+  color: rgba(245,245,245,0.8);
+  line-height: 1.55;
+  padding: 4px 0;
+  padding-left: 14px;
+  position: relative;
+  font-weight: 300;
+}
+.onepager-claims li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #83C8D6;
+}
+.onepager-footer {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  color: #AA99BF;
+}
+
+/* Deck */
+.deck-viewer {
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+}
+.deck-slide {
+  aspect-ratio: 16 / 9;
+  background: #0C0928;
+  border-radius: 8px;
+  padding: 36px;
+  display: none;
+  flex-direction: column;
+  color: #f5f5f5;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  position: relative;
+  overflow: hidden;
+}
+.deck-slide.active { display: flex; }
+.deck-slide-title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+  gap: 16px;
+}
+.deck-slide-title h2 {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  max-width: 400px;
+}
+.deck-slide-title p {
+  font-size: 13px;
+  color: #AA99BF;
+  font-weight: 300;
+}
+.deck-slide-logos {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+}
+.deck-slide-logos .deck-vara {
+  font-size: 14px;
+  font-weight: 500;
+}
+.deck-slide-logos .logo-sep {
+  width: 1px;
+  height: 18px;
+  background: rgba(255,255,255,0.12);
+}
+.deck-slide-logos img {
+  max-height: 20px;
+  max-width: 80px;
+  object-fit: contain;
+}
+.deck-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  flex: 1;
+  align-content: center;
+}
+.deck-stat-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+}
+.deck-stat-num {
+  font-size: 32px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #83C8D6, #7F74B5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+.deck-stat-label {
+  font-size: 11px;
+  color: #AA99BF;
+  font-weight: 400;
+}
+.deck-slide h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+.deck-bullets {
+  list-style: none;
+  padding: 0;
+  flex: 1;
+}
+.deck-bullets li {
+  font-size: 13px;
+  color: rgba(245,245,245,0.85);
+  line-height: 1.6;
+  padding: 6px 0 6px 18px;
+  position: relative;
+  font-weight: 300;
+}
+.deck-bullets li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 14px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #83C8D6;
+}
+.deck-contact {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+  gap: 12px;
+}
+.deck-contact h2 {
+  font-size: 22px;
+  font-weight: 600;
+}
+.deck-contact p {
+  font-size: 13px;
+  color: #AA99BF;
+  font-weight: 300;
+  max-width: 320px;
+  line-height: 1.6;
+}
+.deck-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+.deck-nav-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--rule-light);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+.deck-nav-btn:hover {
+  border-color: var(--text-muted);
+  color: var(--text);
+}
+.deck-dots {
+  display: flex;
+  gap: 6px;
+}
+.deck-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--rule-light);
+  transition: all 0.2s;
+}
+.deck-dot.active { background: var(--cyan); }
+
+/* Social */
+.social-preview {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.social-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+.social-tab {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-muted);
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--rule);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.social-tab.active {
+  color: var(--text);
+  border-color: var(--cyan);
+  background: rgba(126, 196, 227, 0.06);
+}
+.social-post {
+  background: #1a1a2e;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.social-post-header {
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.social-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #241B56;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #83C8D6;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.social-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.social-post-author {
+  font-size: 13px;
+  font-weight: 500;
+  color: #f5f5f5;
+}
+.social-post-meta {
+  font-size: 11px;
+  color: #636370;
+  font-weight: 300;
+}
+.social-post-image {
+  width: 100%;
+  aspect-ratio: 1.91 / 1;
+  background: #0C0928;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  text-align: center;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.social-post-image.story-format { aspect-ratio: 9 / 16; max-height: 500px; }
+.social-post-image.square-format { aspect-ratio: 1 / 1; }
+.social-post-image .social-glow {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 300px; height: 300px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(131, 200, 214, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+.social-post-image h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f5f5f5;
+  line-height: 1.3;
+  max-width: 320px;
+  position: relative;
+}
+.social-post-image .social-stat {
+  font-size: 36px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #83C8D6, #7F74B5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  position: relative;
+}
+.social-post-image .social-stat-label {
+  font-size: 12px;
+  color: #AA99BF;
+  font-weight: 300;
+  position: relative;
+}
+.social-post-image .social-logos {
+  position: absolute;
+  bottom: 16px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 11px;
+  color: #AA99BF;
+}
+.social-post-image .social-logos img {
+  max-height: 16px;
+  object-fit: contain;
+}
+.social-post-footer {
+  padding: 12px 16px;
+  display: flex;
+  gap: 24px;
+}
+.social-post-footer span {
+  font-size: 12px;
+  color: #636370;
+}
+
+/* Email */
+.email-preview {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.email-chrome {
+  background: #1a1a2e;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.email-chrome-row {
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+  align-items: baseline;
+}
+.email-chrome-label {
+  color: #636370;
+  font-weight: 400;
+  min-width: 48px;
+}
+.email-chrome-value {
+  color: #ababba;
+  font-weight: 300;
+}
+.email-chrome-subject {
+  color: #f5f5f5;
+  font-weight: 500;
+  font-size: 13px;
+}
+.email-body {
+  background: #f8f8fa;
+  color: #1a1a2e;
+  padding: 0;
+}
+.email-banner {
+  background: #0C0928;
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.email-banner .email-vara {
+  font-size: 15px;
+  font-weight: 500;
+  color: #f5f5f5;
+}
+.email-banner img {
+  max-height: 20px;
+  object-fit: contain;
+}
+.email-content {
+  padding: 28px 24px;
+}
+.email-content p {
+  font-size: 13px;
+  color: #3a3a48;
+  line-height: 1.7;
+  margin-bottom: 16px;
+  font-weight: 400;
+}
+.email-content .email-greeting {
+  font-weight: 500;
+  color: #1a1a2e;
+}
+.email-cta-btn {
+  display: inline-block;
+  background: #0C0928;
+  color: #f5f5f5;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 24px;
+  border-radius: 6px;
+  text-decoration: none;
+  margin: 8px 0 16px;
+}
+.email-footer-bar {
+  padding: 16px 24px;
+  border-top: 1px solid #e0e0e6;
+  font-size: 11px;
+  color: #636370;
+  line-height: 1.6;
+}
+
+/* ── Export Section ── */
+.export-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.export-card {
+  padding: 28px;
+  text-align: center;
+  cursor: pointer;
+}
+.export-card h4 {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+.export-card p {
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.export-card .export-icon {
+  font-size: 24px;
+  margin-bottom: 12px;
+  color: var(--cyan);
+}
+.export-card:hover {
+  border-color: var(--cyan);
+}
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--bg-card);
+  border: 1px solid var(--cyan);
+  border-radius: 10px;
+  padding: 14px 28px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text);
+  z-index: 200;
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── Footer ── */
+footer {
+  padding: 32px var(--gutter);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--rule);
+  margin-top: 40px;
+}
+footer p {
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--text-muted);
+}
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .material-grid { grid-template-columns: repeat(2, 1fr); }
+  .config-layout { grid-template-columns: 1fr; }
+  .preview-layout { grid-template-columns: 1fr; }
+  .section-header-grid { grid-template-columns: 1fr; gap: 24px; }
+  .export-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  :root { --gutter: 24px; }
+  .nav-steps { display: none; }
+  .material-grid { grid-template-columns: 1fr; }
+  .hero-title { font-size: clamp(36px, 9vw, 56px); }
+  .hero-cta-row { flex-direction: column; }
+  .export-grid { grid-template-columns: 1fr; }
+  .onepager { padding: 20px; }
+  .onepager-stats { grid-template-columns: 1fr; }
+  .deck-slide { padding: 20px; }
+}
+
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+
+<!-- Nav -->
+<nav>
+  <a href="#" class="nav-logo">Vara <span class="sep">/</span> <span class="sub">Partner Portal</span></a>
+  <ul class="nav-steps" id="navSteps">
+    <li class="nav-step active" data-step="1">Welcome</li>
+    <li class="nav-step" data-step="2">Material</li>
+    <li class="nav-step" data-step="3">Configure</li>
+    <li class="nav-step" data-step="4">Preview</li>
+    <li class="nav-step" data-step="5">Export</li>
+  </ul>
+</nav>
+
+<!-- Step 1: Hero -->
+<section class="hero" id="step-welcome">
+  <div class="hero-glow"></div>
+  <p class="hero-label reveal">Partner Portal</p>
+  <h1 class="hero-title reveal reveal-d1">Create <span class="gradient">marketing materials</span> in minutes</h1>
+  <p class="hero-desc reveal reveal-d2">Generate co-branded one-pagers, presentations, social assets, and email templates — pre-loaded with approved clinical claims and Vara's design system.</p>
+  <div class="hero-cta-row reveal reveal-d3">
+    <button class="btn-primary" id="heroGetStarted">Get started <span>→</span></button>
+    <button class="btn-secondary" onclick="document.getElementById('step-material').scrollIntoView({behavior:'smooth'})">See material types</button>
+  </div>
+  <div class="welcome-card glass-card reveal reveal-d4">
+    <div class="input-label">Your company name</div>
+    <div class="input-row">
+      <input type="text" class="input-field" id="companyNameHero" placeholder="e.g. MedTech Distribution GmbH">
+      <button class="btn-primary" id="heroConfirm" style="flex-shrink:0">Continue <span>→</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- Ticker -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span>One-pagers</span><span class="dot">✦</span>
+    <span>Presentations</span><span class="dot">✦</span>
+    <span>Social assets</span><span class="dot">✦</span>
+    <span>Email templates</span><span class="dot">✦</span>
+    <span>Co-branded materials</span><span class="dot">✦</span>
+    <span>Pre-approved claims</span><span class="dot">✦</span>
+    <span>One-pagers</span><span class="dot">✦</span>
+    <span>Presentations</span><span class="dot">✦</span>
+    <span>Social assets</span><span class="dot">✦</span>
+    <span>Email templates</span><span class="dot">✦</span>
+    <span>Co-branded materials</span><span class="dot">✦</span>
+    <span>Pre-approved claims</span><span class="dot">✦</span>
+  </div>
+</div>
+
+<!-- Step 2: Material Selection -->
+<section class="section step-section" id="step-material">
+  <div class="container">
+    <div class="section-header-grid reveal">
+      <div>
+        <p class="section-label">01 — Select material</p>
+        <h2 class="section-heading">What do you <span class="gradient">need?</span></h2>
+      </div>
+      <p class="section-desc">Choose a format — each one is pre-loaded with Vara's approved clinical claims and brand system, ready for co-branding.</p>
+    </div>
+    <div class="material-grid">
+      <div class="glass-card material-card reveal" data-type="one-pager">
+        <div class="card-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="2" width="14" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/><line x1="6" y1="6" x2="14" y2="6" stroke="currentColor" stroke-width="1.2"/><line x1="6" y1="9" x2="14" y2="9" stroke="currentColor" stroke-width="1.2"/><line x1="6" y1="12" x2="11" y2="12" stroke="currentColor" stroke-width="1.2"/></svg>
+        </div>
+        <h4>Product One-Pager</h4>
+        <p>Single-page sell sheet with key claims, stats, and product overview for any audience.</p>
+      </div>
+      <div class="glass-card material-card reveal reveal-d1" data-type="deck">
+        <div class="card-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><rect x="4" y="2" width="12" height="2" rx="1" stroke="currentColor" stroke-width="1"/><line x1="6" y1="8" x2="14" y2="8" stroke="currentColor" stroke-width="1.2"/><line x1="6" y1="11" x2="11" y2="11" stroke="currentColor" stroke-width="1.2"/></svg>
+        </div>
+        <h4>Presentation Deck</h4>
+        <p>Multi-slide deck for meetings and pitch presentations, ready to co-brand.</p>
+      </div>
+      <div class="glass-card material-card reveal reveal-d2" data-type="social">
+        <div class="card-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="3" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="9" r="3" stroke="currentColor" stroke-width="1.2"/><line x1="6" y1="15" x2="14" y2="15" stroke="currentColor" stroke-width="1.2"/></svg>
+        </div>
+        <h4>Social Media Assets</h4>
+        <p>LinkedIn, X, and story-format graphics with key visuals and claims.</p>
+      </div>
+      <div class="glass-card material-card reveal reveal-d3" data-type="email">
+        <div class="card-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M2 6l8 5 8-5" stroke="currentColor" stroke-width="1.2"/></svg>
+        </div>
+        <h4>Email Template</h4>
+        <p>Outreach email with approved messaging, claims, and a professional layout.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Step 3: Configure -->
+<section class="section step-section" id="step-configure">
+  <div class="container">
+    <div class="section-header-grid reveal">
+      <div>
+        <p class="section-label">02 — Configure</p>
+        <h2 class="section-heading">Tailor your <span class="gradient">content</span></h2>
+      </div>
+      <p class="section-desc">Select your audience, product focus, and claims. The preview updates automatically as you make selections.</p>
+    </div>
+    <div class="config-layout">
+      <!-- Left: Form -->
+      <div class="config-form">
+        <div class="glass-card config-block reveal">
+          <h4>Target Audience</h4>
+          <div class="pill-group" id="audienceGroup">
+            <label class="pill"><input type="radio" name="audience" value="radiologists"><span class="pill-label">Radiologists</span></label>
+            <label class="pill"><input type="radio" name="audience" value="centres"><span class="pill-label">Screening Centres</span></label>
+            <label class="pill"><input type="radio" name="audience" value="policymakers"><span class="pill-label">Policymakers & Public Health</span></label>
+          </div>
+        </div>
+        <div class="glass-card config-block reveal reveal-d1">
+          <h4>Product Focus</h4>
+          <div class="pill-group" id="focusGroup">
+            <label class="pill"><input type="radio" name="focus" value="independent"><span class="pill-label">Independent Reading</span></label>
+            <label class="pill"><input type="radio" name="focus" value="triage"><span class="pill-label">Normal Triage</span></label>
+            <label class="pill"><input type="radio" name="focus" value="consensus"><span class="pill-label">Consensus Support</span></label>
+          </div>
+        </div>
+        <div class="glass-card config-block reveal reveal-d2">
+          <h4>Key Claims</h4>
+          <div class="claim-list" id="claimList"></div>
+        </div>
+        <div class="glass-card config-block reveal reveal-d3">
+          <h4>Tone</h4>
+          <div class="pill-group" id="toneGroup">
+            <label class="pill"><input type="radio" name="tone" value="clinical"><span class="pill-label">Clinical / Evidence-Led</span></label>
+            <label class="pill"><input type="radio" name="tone" value="efficiency"><span class="pill-label">Efficiency-Focused</span></label>
+            <label class="pill"><input type="radio" name="tone" value="innovation"><span class="pill-label">Innovation / Forward-Looking</span></label>
+          </div>
+        </div>
+        <div class="glass-card config-block reveal reveal-d4">
+          <h4>Co-Branding</h4>
+          <div style="margin-bottom:16px">
+            <div class="input-label" style="margin-bottom:6px">Company name</div>
+            <input type="text" class="input-field" id="companyNameConfig" placeholder="Your company name">
+          </div>
+          <div class="input-label" style="margin-bottom:6px">Logo</div>
+          <div class="upload-zone" id="logoUpload">
+            <div id="uploadPrompt">
+              <div class="upload-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0l-4 4m4-4l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 16v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </div>
+              <p>Drop your logo or <span class="upload-link">browse</span></p>
+              <p class="upload-hint">PNG, JPG, or SVG</p>
+            </div>
+            <div class="upload-preview" id="uploadPreview" style="display:none">
+              <img id="logoPreviewImg" alt="Logo preview">
+              <button class="upload-remove" id="removeLogo">Remove</button>
+            </div>
+          </div>
+          <input type="file" id="logoInput" accept="image/png,image/jpeg,image/svg+xml" hidden>
+        </div>
+      </div>
+      <!-- Right: Summary -->
+      <div class="summary-card glass-card reveal">
+        <h4>Summary</h4>
+        <div id="summaryContent"></div>
+        <button class="btn-primary summary-btn" id="generateBtn" disabled>Generate preview <span>→</span></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Step 4: Preview -->
+<section class="section step-section" id="step-preview">
+  <div class="container">
+    <div class="section-header-grid reveal">
+      <div>
+        <p class="section-label">03 — Preview</p>
+        <h2 class="section-heading">Your <span class="gradient">material</span></h2>
+      </div>
+      <p class="section-desc">Review the generated material below. Adjust configuration on the right to update the preview in real time.</p>
+    </div>
+    <div class="preview-layout">
+      <div class="preview-frame" id="previewFrame">
+        <div class="generation-overlay" id="genOverlay">
+          <div class="skeleton-group">
+            <div class="skeleton-block"></div>
+            <div class="skeleton-block"></div>
+            <div class="skeleton-block"></div>
+            <div class="skeleton-block"></div>
+          </div>
+          <div class="generation-text" id="genText">Generating your material...</div>
+          <div class="generation-bar-track">
+            <div class="generation-bar" id="genBar"></div>
+          </div>
+        </div>
+        <div class="preview-content" id="previewContent"></div>
+      </div>
+      <div class="preview-controls">
+        <div class="glass-card config-block">
+          <h4>Quick Adjust</h4>
+          <div style="margin-bottom:14px">
+            <div class="input-label" style="margin-bottom:6px;font-size:11px">Audience</div>
+            <div class="pill-group" id="quickAudience"></div>
+          </div>
+          <div style="margin-bottom:14px">
+            <div class="input-label" style="margin-bottom:6px;font-size:11px">Tone</div>
+            <div class="pill-group" id="quickTone"></div>
+          </div>
+        </div>
+        <button class="btn-primary" style="width:100%;justify-content:center" id="exportBtn">Continue to export <span>→</span></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Step 5: Export -->
+<section class="section step-section" id="step-export">
+  <div class="container">
+    <div class="section-header-grid reveal">
+      <div>
+        <p class="section-label">04 — Export</p>
+        <h2 class="section-heading">Download & <span class="gradient">share</span></h2>
+      </div>
+      <p class="section-desc">Export your material or request final production from the Vara design team.</p>
+    </div>
+    <div class="export-grid">
+      <div class="glass-card export-card reveal" id="exportDownload">
+        <div class="export-icon">↓</div>
+        <h4 id="exportDownloadLabel">Download PDF</h4>
+        <p>Ready-to-share file with your co-branding and selected claims.</p>
+      </div>
+      <div class="glass-card export-card reveal reveal-d1" id="exportProduction">
+        <div class="export-icon">✦</div>
+        <h4>Request Production</h4>
+        <p>Hand off to the Vara design team for final polish and custom adjustments.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>Vara / Partner Portal</p>
+  <p style="color:var(--text-quaternary)">Prototype — materials are generated with pre-approved claims only</p>
+</footer>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── State ──
+const STATE = {
+  step: 1,
+  materialType: null,
+  audience: null,
+  productFocus: null,
+  selectedClaims: [],
+  tone: null,
+  distributorName: '',
+  distributorLogo: null,
+  currentSlide: 0,
+  socialFormat: 'linkedin',
+  previewGenerated: false,
+};
+
+// ── Data ──
+const CLAIMS = [
+  { id: 'ce_cert', text: 'Only AI certified for independent mammography reading in Europe (CE Class IIb)', source: 'CE Certification' },
+  { id: 'praim_study', text: '460,000+ women screened in largest prospective AI screening trial (Nature Medicine 2025)', source: 'PRAIM Study' },
+  { id: 'workload', text: '56.7% reduction in reading workload', source: 'PRAIM Study' },
+  { id: 'detection', text: '17.6% more cancers detected vs. standard double reading', source: 'PRAIM Study' },
+  { id: 'deployment', text: 'Deployed across 40% of Germany\'s national screening programme', source: 'Operational Data' },
+  { id: 'sites', text: 'Validated across 12 screening sites in Germany', source: 'PRAIM Study' },
+];
+
+const AUDIENCES = {
+  radiologists: { name: 'Radiologists', greeting: 'Dear Colleague' },
+  centres: { name: 'Screening Centres', greeting: 'Dear Screening Director' },
+  policymakers: { name: 'Policymakers & Public Health', greeting: 'Dear Decision Maker' },
+};
+
+const FOCUS_AREAS = {
+  independent: { name: 'Independent Reading', desc: 'AI performs independent mammography reading as a certified second reader' },
+  triage: { name: 'Normal Triage', desc: 'Pre-written reports for normal cases, prioritizing suspicious findings' },
+  consensus: { name: 'Consensus Support', desc: 'AI-powered consensus across multiple screening centers' },
+};
+
+const TONES = {
+  clinical: 'Clinical / Evidence-Led',
+  efficiency: 'Efficiency-Focused',
+  innovation: 'Innovation / Forward-Looking',
+};
+
+const HEADLINES = {
+  radiologists: {
+    clinical: { independent: 'Clinically Validated AI for Independent Mammography Reading', triage: 'Evidence-Based Normal Case Triage for Mammography', consensus: 'AI-Powered Consensus Support Validated Across 12 Sites' },
+    efficiency: { independent: 'Reduce Reading Workload by 56.7% with Certified AI', triage: 'Streamline Your Workflow with AI Normal Triage', consensus: 'Efficient Multi-Site Consensus with AI Support' },
+    innovation: { independent: 'The Future of Mammography: AI as Your Certified Reading Partner', triage: 'Next-Generation Triage — AI That Prioritises What Matters', consensus: 'Redefining Screening Consensus with Artificial Intelligence' },
+  },
+  centres: {
+    clinical: { independent: 'CE-Certified AI for Your Screening Programme', triage: 'Validated Normal Case Triage for Screening Operations', consensus: 'Evidence-Based Consensus Support Across Your Network' },
+    efficiency: { independent: 'Address Radiologist Shortages with Certified AI Reading', triage: 'Optimise Throughput: AI-Powered Normal Case Triage', consensus: 'Unified Screening Standards Across All Your Sites' },
+    innovation: { independent: 'Transform Your Screening Programme with AI', triage: 'Intelligent Triage for Modern Screening Centres', consensus: 'Connected, AI-Powered Screening Across Your Network' },
+  },
+  policymakers: {
+    clinical: { independent: 'Population-Scale AI Screening — Validated in 460,000+ Women', triage: 'Scalable Normal Triage Backed by Prospective Evidence', consensus: 'National-Scale Consensus Support with Transparent AI' },
+    efficiency: { independent: 'Sustainable Screening: AI That Reduces Workload by 56.7%', triage: 'Cost-Effective Triage for National Screening Programmes', consensus: 'Harmonised Standards Across Screening Infrastructure' },
+    innovation: { independent: 'Leading the Transition to AI-Augmented Population Screening', triage: 'AI Triage — A New Standard for Public Health Screening', consensus: 'Building the Future of Accountable, AI-Powered Screening' },
+  },
+};
+
+const SUBHEADS = {
+  radiologists: 'Vara AI is the only artificial intelligence system certified for independent mammography reading in Europe — designed to support your clinical workflow without compromising quality.',
+  centres: 'Vara AI is the only AI system certified for independent mammography reading in Europe, helping screening centres maintain throughput while addressing radiologist shortages.',
+  policymakers: 'Vara AI is the only AI system certified for independent mammography reading in Europe — transparently deployed at national scale with continuous outcome monitoring.',
+};
+
+// ── Init ──
+function init() {
+  renderClaims();
+  bindEvents();
+  updateSummary();
+  initReveal();
+}
+
+function renderClaims() {
+  const list = document.getElementById('claimList');
+  list.innerHTML = CLAIMS.map((c, i) => `
+    <label class="claim-item">
+      <input type="checkbox" name="claims" value="${c.id}" ${i < 2 ? 'checked' : ''}>
+      <span class="claim-check"></span>
+      <div class="claim-content">
+        <span class="claim-text">${c.text}</span>
+        <span class="claim-source">${c.source}</span>
+      </div>
+    </label>
+  `).join('');
+  // Set initial claims
+  STATE.selectedClaims = CLAIMS.slice(0, 2).map(c => c.id);
+}
+
+function bindEvents() {
+  // Hero buttons
+  document.getElementById('heroGetStarted').addEventListener('click', () => {
+    goToStep(2);
+    document.getElementById('step-material').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  document.getElementById('heroConfirm').addEventListener('click', () => {
+    STATE.distributorName = document.getElementById('companyNameHero').value;
+    document.getElementById('companyNameConfig').value = STATE.distributorName;
+    goToStep(2);
+    setTimeout(() => document.getElementById('step-material').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+  });
+
+  // Material cards
+  document.querySelectorAll('.material-card').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.material-card').forEach(c => c.classList.remove('selected', 'pulse'));
+      card.classList.add('selected', 'pulse');
+      STATE.materialType = card.dataset.type;
+      goToStep(3);
+      updateSummary();
+      setTimeout(() => document.getElementById('step-configure').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    });
+  });
+
+  // Pill groups
+  document.querySelectorAll('input[name="audience"]').forEach(input => {
+    input.addEventListener('change', () => { STATE.audience = input.value; updateSummary(); quickUpdate(); });
+  });
+  document.querySelectorAll('input[name="focus"]').forEach(input => {
+    input.addEventListener('change', () => { STATE.productFocus = input.value; updateSummary(); quickUpdate(); });
+  });
+  document.querySelectorAll('input[name="tone"]').forEach(input => {
+    input.addEventListener('change', () => { STATE.tone = input.value; updateSummary(); quickUpdate(); });
+  });
+
+  // Claims
+  document.getElementById('claimList').addEventListener('change', () => {
+    STATE.selectedClaims = [...document.querySelectorAll('input[name="claims"]:checked')].map(i => i.value);
+    updateSummary();
+    quickUpdate();
+  });
+
+  // Company name config
+  document.getElementById('companyNameConfig').addEventListener('input', (e) => {
+    STATE.distributorName = e.target.value;
+    updateSummary();
+    quickUpdate();
+  });
+
+  // Logo upload
+  const uploadZone = document.getElementById('logoUpload');
+  const fileInput = document.getElementById('logoInput');
+  uploadZone.addEventListener('click', (e) => { if (e.target.id !== 'removeLogo') fileInput.click(); });
+  uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+  uploadZone.addEventListener('drop', (e) => { e.preventDefault(); uploadZone.classList.remove('drag-over'); handleFile(e.dataTransfer.files[0]); });
+  fileInput.addEventListener('change', () => { if (fileInput.files[0]) handleFile(fileInput.files[0]); });
+  document.getElementById('removeLogo').addEventListener('click', (e) => {
+    e.stopPropagation();
+    STATE.distributorLogo = null;
+    fileInput.value = '';
+    document.getElementById('uploadPrompt').style.display = '';
+    document.getElementById('uploadPreview').style.display = 'none';
+    updateSummary();
+    quickUpdate();
+  });
+
+  // Generate
+  document.getElementById('generateBtn').addEventListener('click', () => {
+    goToStep(4);
+    setTimeout(() => {
+      document.getElementById('step-preview').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      runGeneration();
+    }, 100);
+  });
+
+  // Export btn
+  document.getElementById('exportBtn').addEventListener('click', () => {
+    goToStep(5);
+    setTimeout(() => document.getElementById('step-export').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+  });
+
+  // Export actions
+  document.getElementById('exportDownload').addEventListener('click', () => showToast('Download started — your file will be ready shortly'));
+  document.getElementById('exportProduction').addEventListener('click', () => showToast('Request submitted — the Vara design team will be in touch within 24 hours'));
+
+  // Build quick adjust controls
+  buildQuickControls();
+}
+
+function handleFile(file) {
+  if (!file || file.size > 5 * 1024 * 1024) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    STATE.distributorLogo = e.target.result;
+    document.getElementById('logoPreviewImg').src = e.target.result;
+    document.getElementById('uploadPrompt').style.display = 'none';
+    document.getElementById('uploadPreview').style.display = 'flex';
+    updateSummary();
+    quickUpdate();
+  };
+  reader.readAsDataURL(file);
+}
+
+function buildQuickControls() {
+  const qa = document.getElementById('quickAudience');
+  qa.innerHTML = Object.entries(AUDIENCES).map(([k, v]) =>
+    `<label class="pill"><input type="radio" name="qAudience" value="${k}"><span class="pill-label">${v.name}</span></label>`
+  ).join('');
+  qa.querySelectorAll('input').forEach(input => {
+    input.addEventListener('change', () => {
+      STATE.audience = input.value;
+      document.querySelector(`input[name="audience"][value="${input.value}"]`).checked = true;
+      updateSummary();
+      quickUpdate();
+    });
+  });
+
+  const qt = document.getElementById('quickTone');
+  qt.innerHTML = Object.entries(TONES).map(([k, v]) =>
+    `<label class="pill"><input type="radio" name="qTone" value="${k}"><span class="pill-label">${v}</span></label>`
+  ).join('');
+  qt.querySelectorAll('input').forEach(input => {
+    input.addEventListener('change', () => {
+      STATE.tone = input.value;
+      document.querySelector(`input[name="tone"][value="${input.value}"]`).checked = true;
+      updateSummary();
+      quickUpdate();
+    });
+  });
+}
+
+// ── Step Management ──
+function goToStep(n) {
+  STATE.step = n;
+  // Update nav
+  document.querySelectorAll('.nav-step').forEach(el => {
+    const s = parseInt(el.dataset.step);
+    el.classList.remove('active', 'completed');
+    if (s === n) el.classList.add('active');
+    else if (s < n) el.classList.add('completed');
+  });
+  // Reveal sections
+  for (let i = 2; i <= 5; i++) {
+    const el = document.querySelectorAll('.step-section')[i - 2];
+    if (i <= n) el.classList.add('step-active');
+  }
+  // Update export label
+  if (STATE.materialType) {
+    const labels = { 'one-pager': 'Download PDF', deck: 'Download PDF', social: 'Download PNG', email: 'Copy HTML' };
+    document.getElementById('exportDownloadLabel').textContent = labels[STATE.materialType] || 'Download';
+  }
+}
+
+// ── Summary ──
+function updateSummary() {
+  const el = document.getElementById('summaryContent');
+  const matNames = { 'one-pager': 'Product One-Pager', deck: 'Presentation Deck', social: 'Social Media Assets', email: 'Email Template' };
+  const rows = [
+    { label: 'Material', value: matNames[STATE.materialType] || '—' },
+    { label: 'Audience', value: AUDIENCES[STATE.audience]?.name || '—' },
+    { label: 'Focus', value: FOCUS_AREAS[STATE.productFocus]?.name || '—' },
+    { label: 'Claims', value: STATE.selectedClaims.length ? `${STATE.selectedClaims.length} selected` : '—' },
+    { label: 'Tone', value: TONES[STATE.tone] || '—' },
+    { label: 'Company', value: STATE.distributorName || '—' },
+  ];
+  el.innerHTML = rows.map(r =>
+    `<div class="summary-row"><span class="summary-label">${r.label}</span><span class="summary-value ${r.value === '—' ? 'empty' : ''}">${r.value}</span></div>`
+  ).join('');
+  if (STATE.distributorLogo) {
+    el.innerHTML += `<div class="summary-row"><span class="summary-label">Logo</span><span class="summary-value"><img src="${STATE.distributorLogo}" class="summary-logo-thumb" alt="Logo"></span></div>`;
+  }
+  // Enable generate button
+  const ready = STATE.materialType && STATE.audience && STATE.productFocus && STATE.tone && STATE.selectedClaims.length > 0;
+  document.getElementById('generateBtn').disabled = !ready;
+}
+
+// ── Generation Animation ──
+function runGeneration() {
+  STATE.previewGenerated = false;
+  const overlay = document.getElementById('genOverlay');
+  const bar = document.getElementById('genBar');
+  const text = document.getElementById('genText');
+  const content = document.getElementById('previewContent');
+
+  const matNames = { 'one-pager': 'one-pager', deck: 'presentation', social: 'social asset', email: 'email template' };
+  text.textContent = `Generating your ${matNames[STATE.materialType]}...`;
+
+  overlay.classList.remove('hidden');
+  content.style.display = 'none';
+  bar.classList.remove('filling');
+
+  requestAnimationFrame(() => {
+    bar.classList.add('filling');
+  });
+
+  setTimeout(() => {
+    overlay.classList.add('hidden');
+    content.style.display = '';
+    renderPreview();
+    STATE.previewGenerated = true;
+    // Sync quick controls
+    if (STATE.audience) { const el = document.querySelector(`input[name="qAudience"][value="${STATE.audience}"]`); if (el) el.checked = true; }
+    if (STATE.tone) { const el = document.querySelector(`input[name="qTone"][value="${STATE.tone}"]`); if (el) el.checked = true; }
+  }, 2800);
+}
+
+function quickUpdate() {
+  if (!STATE.previewGenerated) return;
+  const content = document.getElementById('previewContent');
+  content.classList.add('fading');
+  setTimeout(() => {
+    renderPreview();
+    content.classList.remove('fading');
+  }, 200);
+}
+
+// ── Preview Renderer ──
+function renderPreview() {
+  const el = document.getElementById('previewContent');
+  const headline = getHeadline();
+  const claims = getSelectedClaims();
+  const sub = SUBHEADS[STATE.audience] || '';
+  const partnerName = STATE.distributorName || 'Your Company';
+
+  switch (STATE.materialType) {
+    case 'one-pager': el.innerHTML = renderOnePager(headline, sub, claims, partnerName); break;
+    case 'deck': el.innerHTML = renderDeck(headline, sub, claims, partnerName); bindDeckNav(); break;
+    case 'social': el.innerHTML = renderSocial(headline, claims, partnerName); bindSocialTabs(); break;
+    case 'email': el.innerHTML = renderEmail(headline, sub, claims, partnerName); break;
+    default: el.innerHTML = '<p style="color:var(--text-muted)">Select a material type to preview</p>';
+  }
+}
+
+function getHeadline() {
+  if (STATE.audience && STATE.tone && STATE.productFocus) {
+    return HEADLINES[STATE.audience]?.[STATE.tone]?.[STATE.productFocus] || 'Vara AI — Mammography Screening';
+  }
+  return 'Vara AI — Mammography Screening';
+}
+
+function getSelectedClaims() {
+  return CLAIMS.filter(c => STATE.selectedClaims.includes(c.id));
+}
+
+function logoHTML(size) {
+  if (STATE.distributorLogo) {
+    return `<span style="width:1px;height:${size === 'sm' ? '16' : '22'}px;background:rgba(255,255,255,0.12);display:inline-block;margin:0 2px"></span><img src="${STATE.distributorLogo}" style="max-height:${size === 'sm' ? '16' : '22'}px;max-width:${size === 'sm' ? '60' : '100'}px;object-fit:contain" alt="${STATE.distributorName}">`;
+  }
+  if (STATE.distributorName) {
+    return `<span style="width:1px;height:${size === 'sm' ? '14' : '18'}px;background:rgba(255,255,255,0.12);display:inline-block;margin:0 4px"></span><span style="font-size:${size === 'sm' ? '10' : '12'}px;color:#AA99BF;font-weight:400">${STATE.distributorName}</span>`;
+  }
+  return '';
+}
+
+// ── One-Pager ──
+function renderOnePager(headline, sub, claims, partnerName) {
+  const stats = getStats();
+  return `<div class="onepager">
+    <div class="onepager-header">
+      <span class="onepager-vara">vara</span>
+      <span style="display:flex;align-items:center;gap:8px">
+        ${STATE.distributorLogo ? `<img src="${STATE.distributorLogo}" class="onepager-partner-logo" alt="${partnerName}">` : `<span class="onepager-partner-text">${partnerName}</span>`}
+      </span>
+    </div>
+    <h2 class="onepager-headline">${headline}</h2>
+    <p class="onepager-sub">${sub}</p>
+    <div class="onepager-stats">
+      ${stats.map(s => `<div class="onepager-stat"><div class="onepager-stat-num">${s.num}</div><div class="onepager-stat-label">${s.label}</div></div>`).join('')}
+    </div>
+    <div class="onepager-claims">
+      <h5>Key highlights</h5>
+      <ul>${claims.map(c => `<li>${c.text}</li>`).join('')}</ul>
+    </div>
+    <div class="onepager-footer">
+      <span>${partnerName} — Authorised Partner</span>
+      <span>vara.ai</span>
+    </div>
+  </div>`;
+}
+
+function getStats() {
+  const all = [
+    { id: 'workload', num: '56.7%', label: 'workload reduction' },
+    { id: 'detection', num: '17.6%', label: 'more cancers detected' },
+    { id: 'praim_study', num: '460K+', label: 'women screened' },
+    { id: 'deployment', num: '40%', label: 'of Germany\'s programme' },
+    { id: 'sites', num: '12', label: 'validated sites' },
+  ];
+  const selected = all.filter(s => STATE.selectedClaims.includes(s.id));
+  if (selected.length >= 3) return selected.slice(0, 3);
+  if (selected.length > 0) return selected;
+  return all.slice(0, 3);
+}
+
+// ── Deck ──
+function renderDeck(headline, sub, claims, partnerName) {
+  const stats = getStats();
+  STATE.currentSlide = 0;
+  return `<div class="deck-viewer">
+    <div class="deck-slide active" data-slide="0">
+      <div class="deck-slide-title">
+        <div class="deck-slide-logos">
+          <span class="deck-vara">vara</span>
+          ${STATE.distributorLogo ? `<span class="logo-sep"></span><img src="${STATE.distributorLogo}" alt="${partnerName}">` : (STATE.distributorName ? `<span class="logo-sep"></span><span style="font-size:12px;color:#AA99BF">${partnerName}</span>` : '')}
+        </div>
+        <h2>${headline}</h2>
+        <p>${AUDIENCES[STATE.audience]?.name || 'Healthcare Professionals'}</p>
+      </div>
+    </div>
+    <div class="deck-slide" data-slide="1">
+      <h3>Clinical Evidence</h3>
+      <div class="deck-stats-grid">
+        ${stats.map(s => `<div class="deck-stat-card"><div class="deck-stat-num">${s.num}</div><div class="deck-stat-label">${s.label}</div></div>`).join('')}
+      </div>
+    </div>
+    <div class="deck-slide" data-slide="2">
+      <h3>Key Highlights</h3>
+      <ul class="deck-bullets">
+        ${claims.map(c => `<li>${c.text}</li>`).join('')}
+      </ul>
+    </div>
+    <div class="deck-slide" data-slide="3">
+      <div class="deck-contact">
+        <h2>Let's talk</h2>
+        <p>Ready to explore how Vara AI can support your screening programme? Reach out to ${partnerName} to schedule a conversation.</p>
+        <div class="deck-slide-logos" style="margin-top:8px">
+          <span class="deck-vara">vara</span>
+          ${STATE.distributorLogo ? `<span class="logo-sep"></span><img src="${STATE.distributorLogo}" alt="${partnerName}">` : (STATE.distributorName ? `<span class="logo-sep"></span><span style="font-size:12px;color:#AA99BF">${partnerName}</span>` : '')}
+        </div>
+      </div>
+    </div>
+    <div class="deck-nav">
+      <button class="deck-nav-btn" id="deckPrev">←</button>
+      <div class="deck-dots">
+        <div class="deck-dot active" data-slide="0"></div>
+        <div class="deck-dot" data-slide="1"></div>
+        <div class="deck-dot" data-slide="2"></div>
+        <div class="deck-dot" data-slide="3"></div>
+      </div>
+      <button class="deck-nav-btn" id="deckNext">→</button>
+    </div>
+  </div>`;
+}
+
+function bindDeckNav() {
+  const prev = document.getElementById('deckPrev');
+  const next = document.getElementById('deckNext');
+  if (!prev || !next) return;
+  prev.addEventListener('click', () => navigateSlide(-1));
+  next.addEventListener('click', () => navigateSlide(1));
+  document.querySelectorAll('.deck-dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      STATE.currentSlide = parseInt(dot.dataset.slide);
+      updateSlide();
+    });
+  });
+}
+
+function navigateSlide(dir) {
+  const total = document.querySelectorAll('.deck-slide').length;
+  STATE.currentSlide = (STATE.currentSlide + dir + total) % total;
+  updateSlide();
+}
+
+function updateSlide() {
+  document.querySelectorAll('.deck-slide').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.deck-dot').forEach(d => d.classList.remove('active'));
+  const slide = document.querySelector(`.deck-slide[data-slide="${STATE.currentSlide}"]`);
+  const dot = document.querySelector(`.deck-dot[data-slide="${STATE.currentSlide}"]`);
+  if (slide) slide.classList.add('active');
+  if (dot) dot.classList.add('active');
+}
+
+// ── Social ──
+function renderSocial(headline, claims, partnerName) {
+  const stat = getStats()[0] || { num: '56.7%', label: 'workload reduction' };
+  const format = STATE.socialFormat;
+  const formatClass = format === 'story' ? 'story-format' : (format === 'x' ? 'square-format' : '');
+  const shortHeadline = headline.length > 60 ? headline.substring(0, 57) + '...' : headline;
+
+  return `<div class="social-preview">
+    <div class="social-tabs">
+      <button class="social-tab ${format === 'linkedin' ? 'active' : ''}" data-format="linkedin">LinkedIn</button>
+      <button class="social-tab ${format === 'x' ? 'active' : ''}" data-format="x">X / Twitter</button>
+      <button class="social-tab ${format === 'story' ? 'active' : ''}" data-format="story">Story</button>
+    </div>
+    <div class="social-post">
+      <div class="social-post-header">
+        <div class="social-avatar">${STATE.distributorLogo ? `<img src="${STATE.distributorLogo}" alt="">` : (partnerName[0] || 'V')}</div>
+        <div>
+          <div class="social-post-author">${partnerName}</div>
+          <div class="social-post-meta">Authorised Vara Partner</div>
+        </div>
+      </div>
+      <div class="social-post-image ${formatClass}">
+        <div class="social-glow"></div>
+        <div class="social-stat">${stat.num}</div>
+        <div class="social-stat-label">${stat.label}</div>
+        <h3>${shortHeadline}</h3>
+        <div class="social-logos">
+          <span>vara</span>
+          ${logoHTML('sm')}
+        </div>
+      </div>
+      <div class="social-post-footer">
+        <span>♡ Like</span>
+        <span>💬 Comment</span>
+        <span>↗ Share</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function bindSocialTabs() {
+  document.querySelectorAll('.social-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      STATE.socialFormat = tab.dataset.format;
+      quickUpdate();
+    });
+  });
+}
+
+// ── Email ──
+function renderEmail(headline, sub, claims, partnerName) {
+  const greeting = AUDIENCES[STATE.audience]?.greeting || 'Dear Colleague';
+  const focus = FOCUS_AREAS[STATE.productFocus]?.desc || '';
+  const claimBullets = claims.map(c => `• ${c.text}`).join('<br>');
+  const subject = headline.length > 70 ? headline.substring(0, 67) + '...' : headline;
+
+  return `<div class="email-preview">
+    <div class="email-chrome">
+      <div class="email-chrome-row"><span class="email-chrome-label">From:</span><span class="email-chrome-value">${partnerName}</span></div>
+      <div class="email-chrome-row"><span class="email-chrome-label">To:</span><span class="email-chrome-value">${greeting.replace('Dear ', '')}@example.com</span></div>
+      <div class="email-chrome-row"><span class="email-chrome-label">Subject:</span><span class="email-chrome-subject">${subject}</span></div>
+    </div>
+    <div class="email-body">
+      <div class="email-banner">
+        <span class="email-vara">vara</span>
+        ${STATE.distributorLogo ? `<img src="${STATE.distributorLogo}" alt="${partnerName}">` : `<span style="font-size:12px;color:#AA99BF">${partnerName}</span>`}
+      </div>
+      <div class="email-content">
+        <p class="email-greeting">${greeting},</p>
+        <p>I wanted to introduce you to Vara AI — ${focus.charAt(0).toLowerCase() + focus.slice(1)}.</p>
+        <p>${sub}</p>
+        <p><strong>Key highlights:</strong><br>${claimBullets}</p>
+        <a class="email-cta-btn">Schedule a Conversation →</a>
+        <p style="font-size:12px;color:#636370;margin-top:16px">Would you be available for a brief call to discuss how Vara could support your team? I'd be happy to arrange a demo or share additional clinical evidence.</p>
+      </div>
+      <div class="email-footer-bar">
+        ${partnerName} — Authorised Vara AI Partner<br>
+        This email contains pre-approved clinical claims. All referenced data is from peer-reviewed publications.
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── Toast ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── Reveal Observer ──
+function initReveal() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+}
+
+// ── Go ──
+init();
+</script>
+
+</body>
+</html>
